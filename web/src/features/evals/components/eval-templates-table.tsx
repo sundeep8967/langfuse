@@ -389,7 +389,7 @@ export default function EvalsTemplateTable({
       header: "Usage Count",
       enableHiding: true,
       size: 80,
-      formatter: String,
+      formatter: (value) => String(value),
       getValue: (value) => {
         return value || undefined;
       },
@@ -399,7 +399,7 @@ export default function EvalsTemplateTable({
       header: "Latest Version",
       enableHiding: true,
       size: 80,
-      formatter: String,
+      formatter: (value) => String(value),
     }),
     columnHelper.accessor("id", {
       header: "Id",

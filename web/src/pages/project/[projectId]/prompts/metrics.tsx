@@ -9,6 +9,7 @@ import { NumberParam, useQueryParams, withDefault } from "use-query-params";
 import { type RouterOutput } from "@/src/utils/types";
 import { createLinkTableColumn } from "@/src/components/design-system/table/columns/createLinkTableColumn";
 import { createNumberTableColumn } from "@/src/components/design-system/table/columns/createNumberTableColumn";
+import { createTextTableColumn } from "@/src/components/design-system/table/columns/createTextTableColumn";
 import { numberFormatter, usdFormatter } from "@/src/utils/numbers";
 import { formatIntervalSeconds } from "@/src/utils/dates";
 import useColumnVisibility from "@/src/features/column-visibility/hooks/useColumnVisibility";
@@ -227,7 +228,7 @@ export default function PromptVersionTable({
       header: "Median input tokens",
       size: 160,
       enableHiding: true,
-      formatter: String,
+      formatter: (value) => String(value),
       getValue: (value) => {
         if (!promptMetrics.isSuccess) return { type: "loading" };
         if (!value) return undefined;
@@ -240,7 +241,7 @@ export default function PromptVersionTable({
       header: "Median output tokens",
       size: 170,
       enableHiding: true,
-      formatter: String,
+      formatter: (value) => String(value),
       getValue: (value) => {
         if (!promptMetrics.isSuccess) return { type: "loading" };
         if (!value) return undefined;
@@ -252,7 +253,7 @@ export default function PromptVersionTable({
       accessorKey: "medianCost",
       header: "Median cost",
       size: 120,
-      formatter: usdFormatter,
+      formatter: (value) => usdFormatter(value),
       getValue: (value) => {
         if (!promptMetrics.isSuccess) return { type: "loading" };
         if (!value) return undefined;
@@ -261,23 +262,15 @@ export default function PromptVersionTable({
       },
       enableHiding: true,
     }),
-    {
+    createNumberTableColumn<PromptVersionTableRow, bigint>({
       accessorKey: "generationCount",
-      id: "generationCount",
       header: "Generations count",
       size: 150,
       enableHiding: true,
-      cell: ({ row }) => {
-        const value: bigint | undefined | null =
-          row.getValue("generationCount");
-        if (!promptMetrics.isSuccess) {
-          return <Skeleton className="h-3 w-1/2" />;
-        }
-        return value === undefined || value === null ? null : (
-          <span>{numberFormatter(value, 0)}</span>
-        );
-      },
-    },
+      formatter: (value) => numberFormatter(value, 0),
+      getValue: (value) =>
+        promptMetrics.isSuccess ? (value ?? undefined) : { type: "loading" },
+    }),
     {
       accessorKey: "traceScores",
       header: "Trace Scores",
